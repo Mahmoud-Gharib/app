@@ -32,7 +32,7 @@ class _UploadImagePageState extends State<UploadImagePage> {
   String _status = '';
 
   // ✅ التوكن هنا مباشرة
-  final String githubToken = 'ithub_pat_11AO4EDBI0UeVuuSxfuiQO_VqY08TaJ5m3CxwTsPRytcs3YdGaJoL3p667l2aKBSl5IWK5TH4V8EQc5jc5'; // ✋ استبدل ده بتوكنك
+  final String githubToken = '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'; // ✋ استبدل ده بتوكنك
   final String repoOwner = 'Mahmoud-Gharib';
   final String repoName = 'app_upload';
   final String repoFolder = 'image'; // اسم المجلد داخل الريبو
