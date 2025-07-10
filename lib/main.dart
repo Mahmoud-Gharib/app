@@ -7,9 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // 👈 مهم جدًا
-  await dotenv.load(fileName: ".env");
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // مهم جدًا
+  await dotenv.load(fileName: ".env"); // تحميل المتغيرات
   runApp(MyApp());
 }
 
@@ -58,7 +58,7 @@ class _UploadImagePageState extends State<UploadImagePage> {
     try {
       final githubToken = dotenv.env['GITHUB_TOKEN'];
       if (githubToken == null) {
-        setState(() => _status = '❌ Token not found!');
+        setState(() => _status = '❌ Token not found in .env');
         return;
       }
 
@@ -104,25 +104,21 @@ class _UploadImagePageState extends State<UploadImagePage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (_image != null)
-                Image.file(_image!, width: 200, height: 200, fit: BoxFit.cover),
-              SizedBox(height: 20),
-              ElevatedButton.icon(
-                icon: Icon(Icons.image),
-                label: Text('Pick Image'),
+                Image.file(_image!, width: 200, height: 200),
+              ElevatedButton(
                 onPressed: pickImage,
+                child: Text('Pick Image'),
               ),
-              SizedBox(height: 20),
-              ElevatedButton.icon(
-                icon: Icon(Icons.cloud_upload),
-                label:
-                    Text(_uploading ? 'Uploading...' : 'Upload to GitHub'),
-                onPressed: _image != null && !_uploading
-                    ? () => uploadImageToGitHub(_image!)
-                    : null,
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed:
+                    (_image != null && !_uploading) ? () => uploadImageToGitHub(_image!) : null,
+                child: Text(_uploading ? 'Uploading...' : 'Upload to GitHub'),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Text(_status),
             ],
           ),
