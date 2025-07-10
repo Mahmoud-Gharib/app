@@ -8,8 +8,8 @@ import 'package:path/path.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // مهم جدًا
-  await dotenv.load(fileName: ".env"); // تحميل المتغيرات
+  //WidgetsFlutterBinding.ensureInitialized(); // مهم جدًا
+  //await dotenv.load(fileName: ".env"); // تحميل المتغيرات
   runApp(MyApp());
 }
 
