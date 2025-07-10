@@ -46,7 +46,7 @@ class _GitHubUploaderState extends State<GitHubUploader> {
 
     File imageFile = File(pickedFile.path);
 
-    final String token = 'ghp_your_classic_token_here';
+    final String token = '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';
     final String repoOwner = 'Mahmoud-Gharib';
     final String repoName = 'app_upload';
     final String branch = 'main'; // or 'master'
