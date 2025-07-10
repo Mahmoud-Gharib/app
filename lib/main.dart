@@ -31,7 +31,7 @@ class _UploadImagePageState extends State<UploadImagePage> {
   bool _uploading = false;
   String _status = '';
 
-  final String githubToken = 'ithub_pat_11AO4EDBI0hYb8u8paj62K_SC9AJqI5PZz6PSd1KnQwGZ9Bgw50FXbf0VExnjkDrzuHCPM7PNT6XccZjhK'; // ⚠️ Replace with your token
+  final String githubToken = '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'; // ⚠️ Replace with your token
   final String repoOwner = 'mahmoud-gharib';
   final String repoName = 'app_upload';
   final String repoFolder = 'image'; // Folder inside repo
