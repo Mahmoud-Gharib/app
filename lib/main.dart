@@ -5,12 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future<void> main() async {
-  //WidgetsFlutterBinding.ensureInitialized(); // مهم جدًا
-  //await dotenv.load(fileName: ".env"); // تحميل المتغيرات
-  runApp(MyApp());
+void main() {
+  runApp(MyApp()); // بدون dotenv
 }
 
 class MyApp extends StatelessWidget {
@@ -34,13 +31,14 @@ class _UploadImagePageState extends State<UploadImagePage> {
   bool _uploading = false;
   String _status = '';
 
+  // ✅ التوكن هنا مباشرة
+  final String githubToken = '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'; // ✋ استبدل ده بتوكنك
   final String repoOwner = 'mahmoud-gharib';
   final String repoName = 'app_upload';
-  final String repoFolder = 'image';
+  final String repoFolder = 'image'; // اسم المجلد داخل الريبو
 
   Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -52,23 +50,17 @@ class _UploadImagePageState extends State<UploadImagePage> {
   Future<void> uploadImageToGitHub(File imageFile) async {
     setState(() {
       _uploading = true;
-      _status = 'Uploading...';
+      _status = '⏳ Uploading...';
     });
 
     try {
-      final githubToken = dotenv.env['GITHUB_TOKEN'];
-      if (githubToken == null) {
-        setState(() => _status = '❌ Token not found in .env');
-        return;
-      }
-
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}_${basename(imageFile.path)}';
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${basename(imageFile.path)}';
       final imageBytes = await imageFile.readAsBytes();
       final contentBase64 = base64Encode(imageBytes);
 
       final url = Uri.parse(
-          'https://api.github.com/repos/$repoOwner/$repoName/contents/$repoFolder/$fileName');
+        'https://api.github.com/repos/$repoOwner/$repoName/contents/$repoFolder/$fileName',
+      );
 
       final body = jsonEncode({
         'message': 'Upload image from Flutter app',
@@ -108,17 +100,19 @@ class _UploadImagePageState extends State<UploadImagePage> {
             children: [
               if (_image != null)
                 Image.file(_image!, width: 200, height: 200),
-              ElevatedButton(
+              SizedBox(height: 20),
+              ElevatedButton.icon(
+                icon: Icon(Icons.image),
+                label: Text('Pick Image'),
                 onPressed: pickImage,
-                child: Text('Pick Image'),
               ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed:
-                    (_image != null && !_uploading) ? () => uploadImageToGitHub(_image!) : null,
-                child: Text(_uploading ? 'Uploading...' : 'Upload to GitHub'),
+              SizedBox(height: 20),
+              ElevatedButton.icon(
+                icon: Icon(Icons.cloud_upload),
+                label: Text(_uploading ? 'Uploading...' : 'Upload to GitHub'),
+                onPressed: _image != null && !_uploading ? () => uploadImageToGitHub(_image!) : null,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               Text(_status),
             ],
           ),
