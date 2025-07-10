@@ -1,7 +1,7 @@
 name: Build and Email APK
 
 on:
-  push:
+  push: 
     branches:
       - main
 
