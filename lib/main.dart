@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 👈 مهم جدًا
   await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
