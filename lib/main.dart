@@ -31,10 +31,10 @@ class _UploadImagePageState extends State<UploadImagePage> {
   bool _uploading = false;
   String _status = '';
 
-  final String githubToken = 'YOUR_GITHUB_TOKEN_HERE'; // ⚠️ Replace with your token
-  final String repoOwner = 'YOUR_USERNAME';
-  final String repoName = 'YOUR_REPO';
-  final String repoFolder = 'flutter_uploads'; // Folder inside repo
+  final String githubToken = 'ithub_pat_11AO4EDBI0hYb8u8paj62K_SC9AJqI5PZz6PSd1KnQwGZ9Bgw50FXbf0VExnjkDrzuHCPM7PNT6XccZjhK'; // ⚠️ Replace with your token
+  final String repoOwner = 'mahmoud-gharib';
+  final String repoName = 'app_upload';
+  final String repoFolder = 'image'; // Folder inside repo
 
   Future<void> pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
