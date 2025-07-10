@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
@@ -31,13 +33,13 @@ class _UploadImagePageState extends State<UploadImagePage> {
   bool _uploading = false;
   String _status = '';
 
-  final String githubToken = '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'; // ⚠️ Replace with your token
   final String repoOwner = 'mahmoud-gharib';
   final String repoName = 'app_upload';
-  final String repoFolder = 'image'; // Folder inside repo
+  final String repoFolder = 'image';
 
   Future<void> pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -53,13 +55,19 @@ class _UploadImagePageState extends State<UploadImagePage> {
     });
 
     try {
-      final fileName = basename(imageFile.path);
+      final githubToken = dotenv.env['GITHUB_TOKEN'];
+      if (githubToken == null) {
+        setState(() => _status = '❌ Token not found!');
+        return;
+      }
+
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${basename(imageFile.path)}';
       final imageBytes = await imageFile.readAsBytes();
       final contentBase64 = base64Encode(imageBytes);
 
       final url = Uri.parse(
-        'https://api.github.com/repos/$repoOwner/$repoName/contents/$repoFolder/$fileName',
-      );
+          'https://api.github.com/repos/$repoOwner/$repoName/contents/$repoFolder/$fileName');
 
       final body = jsonEncode({
         'message': 'Upload image from Flutter app',
@@ -107,8 +115,11 @@ class _UploadImagePageState extends State<UploadImagePage> {
               SizedBox(height: 20),
               ElevatedButton.icon(
                 icon: Icon(Icons.cloud_upload),
-                label: Text(_uploading ? 'Uploading...' : 'Upload to GitHub'),
-                onPressed: _image != null && !_uploading ? () => uploadImageToGitHub(_image!) : null,
+                label:
+                    Text(_uploading ? 'Uploading...' : 'Upload to GitHub'),
+                onPressed: _image != null && !_uploading
+                    ? () => uploadImageToGitHub(_image!)
+                    : null,
               ),
               SizedBox(height: 20),
               Text(_status),
