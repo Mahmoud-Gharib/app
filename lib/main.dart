@@ -3,81 +3,75 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GitHub Uploader',
-      home: GitHubUploader(),
+      title: 'GitHub Image Uploader',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: UploadImageScreen(),
     );
   }
 }
 
-class GitHubUploader extends StatefulWidget {
+class UploadImageScreen extends StatefulWidget {
   @override
-  _GitHubUploaderState createState() => _GitHubUploaderState();
+  _UploadImageScreenState createState() => _UploadImageScreenState();
 }
 
-class _GitHubUploaderState extends State<GitHubUploader> {
-  final ImagePicker _picker = ImagePicker();
-  bool _isLoading = false;
-  String _message = '';
+class _UploadImageScreenState extends State<UploadImageScreen> {
+  File? _image;
+  bool _uploading = false;
 
-  Future<void> _pickAndUploadImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile == null) {
-      setState(() {
-        _message = 'No image selected.';
-      });
-      return;
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() => _image = File(pickedFile.path));
     }
+  }
 
-    setState(() {
-      _isLoading = true;
-      _message = '';
-    });
+  Future<void> _uploadToGitHub() async {
+    if (_image == null) return;
 
-    File imageFile = File(pickedFile.path);
+    setState(() => _uploading = true);
 
-    final String token = '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';
-    final String repoOwner = 'Mahmoud-Gharib';
-    final String repoName = 'app_upload';
-    final String branch = 'main'; // or 'master'
-    final String filePathInRepo = 'image/${path.basename(imageFile.path)}';
+    final token = "ithub_pat_11AO4EDBI0rL5yUVfa8pDe_84rKvopir9W7yESVtMMOESZBPPvINvhRvdPzm65zSAKJ7DVDDV5rSyvB1gh";
+    final repo = "Mahmoud-Gharib/app_upload";
+    final branch = "main"; // or master
+    final fileName = basename(_image!.path);
+    final imageBytes = await _image!.readAsBytes();
+    final base64Image = base64Encode(imageBytes);
 
-    final bytes = await imageFile.readAsBytes();
-    final base64Content = base64Encode(bytes);
-
-    final url = 'https://api.github.com/repos/$repoOwner/$repoName/contents/$filePathInRepo';
+    final url = "https://api.github.com/repos/$repo/contents/$fileName";
 
     final response = await http.put(
       Uri.parse(url),
       headers: {
-        'Authorization': 'token $token',
-        'Accept': 'application/vnd.github.v3+json',
+        "Authorization": "Bearer $token",
+        "Accept": "application/vnd.github+json",
       },
       body: jsonEncode({
-        "message": "Upload ${path.basename(imageFile.path)} from Flutter",
-        "content": base64Content,
+        "message": "Add image $fileName",
         "branch": branch,
+        "content": base64Image,
       }),
     );
 
-    setState(() {
-      _isLoading = false;
-      if (response.statusCode == 201) {
-        _message = '✅ Image uploaded successfully!';
-      } else {
-        _message = '❌ Upload failed: ${response.statusCode}\n${response.body}';
-      }
-    });
+    setState(() => _uploading = false);
+
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("✅ Image uploaded to GitHub")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("❌ Failed: ${response.body}")),
+      );
+    }
   }
 
   @override
@@ -86,20 +80,22 @@ class _GitHubUploaderState extends State<GitHubUploader> {
       appBar: AppBar(title: Text('Upload Image to GitHub')),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
-          child: _isLoading
-              ? CircularProgressIndicator()
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _pickAndUploadImage,
-                      child: Text('Pick and Upload Image'),
-                    ),
-                    SizedBox(height: 20),
-                    Text(_message),
-                  ],
-                ),
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              if (_image != null) Image.file(_image!, height: 200),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text("📁 Pick Image"),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _uploading ? null : _uploadToGitHub,
+                child: _uploading ? CircularProgressIndicator() : Text("⬆️ Upload to GitHub"),
+              ),
+            ],
+          ),
         ),
       ),
     );
