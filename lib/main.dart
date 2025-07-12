@@ -39,7 +39,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
 
     setState(() => _uploading = true);
 
-    final token = "ithub_pat_11AO4EDBI0rL5yUVfa8pDe_84rKvopir9W7yESVtMMOESZBPPvINvhRvdPzm65zSAKJ7DVDDV5rSyvB1gh";
+    final token = "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";
     final repo = "Mahmoud-Gharib/app_upload";
     final branch = "main"; // or master
     final fileName = basename(_image!.path);
