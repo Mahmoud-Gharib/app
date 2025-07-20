@@ -41,3 +41,12 @@ jobs:
         with:
           name: release-apk
           path: apk_release/app-release.apk
+          
+      - name: Upload APK to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "APK Release"
+          tag_name: "v1.0.${{ github.run_number }}"
+          files: apk_release/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
