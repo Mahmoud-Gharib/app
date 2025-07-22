@@ -51,3 +51,9 @@ jobs:
           files: apk_release/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Send APK link via SMS using TextBelt
+        run: |
+          curl -X POST https://textbelt.com/text \
+            --data-urlencode phone='+201147857132' \
+            --data-urlencode message="Your APK is ready! Download it here: https://github.com/${{ github.repository }}/releases/latest/download/app-release.apk" \
+            --data-urlencode key=textbelt
