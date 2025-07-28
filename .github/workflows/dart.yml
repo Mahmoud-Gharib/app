@@ -32,22 +32,28 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Create apk_release folder
+      - name: Read APK name from name.txt
+        id: read_apk_name
+        run: |
+          APK_NAME=$(cat name.txt)
+          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+
+      - name: Rename APK and move to apk_release/
         run: |
           mkdir -p apk_release
-          cp build/app/outputs/flutter-apk/app-release.apk apk_release/app-release.apk
+          cp build/app/outputs/flutter-apk/app-release.apk apk_release/${{ steps.read_apk_name.outputs.apk_name }}.apk
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: apk_release/app-release.apk
-          
+          path: apk_release/${{ steps.read_apk_name.outputs.apk_name }}.apk
+
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           name: "APK Release"
           tag_name: "v1.0.${{ github.run_number }}"
-          files: apk_release/app-release.apk
+          files: apk_release/${{ steps.read_apk_name.outputs.apk_name }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
