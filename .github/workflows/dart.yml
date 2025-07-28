@@ -51,6 +51,3 @@ jobs:
           files: apk_release/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Send WhatsApp message via CallMeBot
-        run: |
-         curl "https://api.callmebot.com/whatsapp.php?phone=+201147857132&text=Your+APK+is+ready+here:+https://github.com/Mahmoud-Gharib/app/releases/latest/download/app-release.apk&apikey=YOUR_API_KEY"
